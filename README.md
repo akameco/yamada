@@ -1,4 +1,4 @@
-# ![yamada](yamada.png)
+# ![yamada](res/yamada.png)
 
 > best image viewer while at work.
 > 最高の作業用画像ビューア
