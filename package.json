@@ -1,0 +1,53 @@
+{
+  "name": "yamada",
+  "version": "0.0.0",
+  "description": "Image viewer for making happy.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "clean": "rimraf dist",
+    "copy": "cpx '{index.html,package.json,yamada.png}' dist",
+    "build": "npm-run-all -s clean copy build:renderer build:main",
+    "build:renderer": "browserify index.js -o ./dist/index.js",
+    "build:main": "browserify main.js --im --no-detect-globals --node -d -o ./dist/main.js",
+    "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.36.9 --overwrite --asar --icon=./res/yamada.icns",
+    "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.36.9 --overwrite --asar --icon=./res/yamada.icon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akameco/yamada.git"
+  },
+  "keywords": [
+    "electron",
+    "image",
+    "viewer"
+  ],
+  "author": "akameco <akameco.t@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akameco/yamada/issues"
+  },
+  "homepage": "https://github.com/akameco/yamada#readme",
+  "dependencies": {
+    "array-includes": "^3.0.2",
+    "chokidar": "^1.4.3",
+    "electron-json-storage": "^2.0.0",
+    "lodash.shuffle": "^4.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "cpx": "^1.2.1",
+    "electron-prebuilt": "^0.36.9",
+    "npm-run-all": "^1.5.1",
+    "rcedit": "^0.4.0",
+    "rimraf": "^2.5.2",
+    "xo": "*"
+  },
+  "xo": {
+    "space": true,
+    "env": [
+      "browser"
+    ]
+  }
+}
