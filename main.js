@@ -4,6 +4,7 @@ const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
 const storage = require('electron-json-storage');
 const app = electron.app;
+const ipcMain = electron.ipcMain;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
 const EXT_PATTERNS = '/*.{png|jpg|jpeg|gif}';
@@ -152,7 +153,7 @@ function initMenu() {
           type: 'separator'
         },
         {
-          label: 'Open',
+          label: 'Open...',
           accelerator: 'Command+O',
           click: openDirectory
         },
@@ -206,3 +207,5 @@ app.on('ready', () => {
 
   updateImages(INTERVAL_TIME);
 });
+
+ipcMain.on('open', openDirectory);
