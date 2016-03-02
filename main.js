@@ -37,7 +37,7 @@ function createMainWindow() {
 
   win.loadURL(`file://${__dirname}/index.html`);
   win.on('closed', () => {
-    mainWindow = null
+    mainWindow = null;
   });
 
   return win;
@@ -192,7 +192,6 @@ function setupWatcher(dir) {
       }, WAIT_TIME);
     });
 }
-
 
 app.on('window-all-closed', () => {
   clearInterval(timer);

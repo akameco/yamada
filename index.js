@@ -6,12 +6,12 @@ const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 
 let menu = new Menu();
-menu.append(new MenuItem({ 
+menu.append(new MenuItem({
   label: 'ファイルを開く...',
   click: () => ipcRenderer.send('open')
 }));
-menu.append(new MenuItem({ type: 'separator' }));
-menu.append(new MenuItem({ 
+menu.append(new MenuItem({type: 'separator'}));
+menu.append(new MenuItem({
   label: 'yamadaを終了',
   click: () => app.quit()
 }));
