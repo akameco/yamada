@@ -17,7 +17,7 @@ menu.append(new MenuItem({
   checked: keepAspectRatio,
   click: () => {
     keepAspectRatio = !keepAspectRatio;
-    console.log("@keepAspectRatio", keepAspectRatio);
+    console.log('@keepAspectRatio', keepAspectRatio);
   }
 }));
 menu.append(new MenuItem({type: 'separator'}));
@@ -28,7 +28,7 @@ menu.append(new MenuItem({
 
 const getInlineImageStyle = () => {
   const maxOption = keepAspectRatio ? 'max-' : '';
-  return `style="${maxOption}width: 100%; ${maxOption}height: 100%"`
+  return `style="${maxOption}width: 100%; ${maxOption}height: 100%"`;
 };
 
 window.addEventListener('contextmenu', e => {
