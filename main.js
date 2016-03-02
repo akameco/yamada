@@ -8,6 +8,7 @@ const ipcMain = electron.ipcMain;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
 const EXT_PATTERNS = '/*.{png|jpg|jpeg|gif}';
+const WAIT_TIME = 100;
 
 const WIDTH = 260;
 const HEIGHT = 280;
@@ -17,11 +18,8 @@ let images = [];
 let watcher = null;
 let timer = null;
 
-function onClosed() {
-  mainWindow = null;
-}
-
 function createMainWindow() {
+  loadCofig();
   const electronScreen = electron.screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
@@ -35,85 +33,17 @@ function createMainWindow() {
     frame: false
   });
 
-  initMenu();
+  createMenu();
 
   win.loadURL(`file://${__dirname}/index.html`);
-  win.on('closed', onClosed);
+  win.on('closed', () => {
+    mainWindow = null
+  });
+
   return win;
 }
 
-function openDirectory() {
-  const dialog = electron.dialog;
-  const dir = dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']});
-
-  setWindowOnTop();
-
-  if (!dir) {
-    return;
-  }
-
-  storage.set('config', {imageDir: dir}, err => {
-    if (err) {
-      console.log(err);
-    }
-  });
-
-  images = [];
-  setupWatcher(dir);
-}
-
-// dialogを開くとalwaysOnTopが解除されるため
-function setWindowOnTop() {
-  setTimeout(() => {
-    if (!mainWindow.isAlwaysOnTop()) {
-      mainWindow.setAlwaysOnTop(true);
-    }
-  }, 100);
-}
-
-function updateImages(time) {
-  let i = 0;
-  timer = setInterval(() => {
-    sendImage(images[i]);
-    i += 1;
-    if (i > images.length - 1) {
-      i = 0;
-    }
-  }, time);
-}
-
-function sendImage(image) {
-  try {
-    mainWindow.webContents.send('image', JSON.stringify(image));
-  } catch (e) {
-    console.log('Error', e);
-  }
-}
-
-function setupWatcher(dir) {
-  if (watcher && watcher.getWatched()) {
-    watcher.close();
-  }
-
-  watcher = chokidar.watch(dir[0] + EXT_PATTERNS, {ignored: /[\/\\]\./});
-  watcher
-    .on('all', () => {
-      // ファイルに更新がある場合、再シャッフル
-      images = shuffle(images);
-    })
-    .on('add', path => {
-      images.push(path);
-    })
-    .on('unlink', path => images = images.filter(filename => filename !== path))
-    .on('ready', () => {
-      setTimeout(() => {
-        images = shuffle(images);
-        sendImage(images[0]);
-      }, 10);
-    });
-}
-
-function initMenu() {
+function createMenu() {
   const Menu = electron.Menu;
   const name = app.getName();
   const menu = Menu.buildFromTemplate([
@@ -176,6 +106,94 @@ function initMenu() {
   Menu.setApplicationMenu(menu);
 }
 
+function loadCofig() {
+  storage.get('config', (err, data) => {
+    if (err) {
+      throw err;
+    }
+
+    if (data.imageDir) {
+      setupWatcher(data.imageDir);
+    } else {
+      openDirectory();
+    }
+  });
+}
+
+function openDirectory() {
+  electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, dir => {
+    if (!dir) {
+      return;
+    }
+
+    console.log('opened', dir);
+    setWindowOnTop();
+    saveImageDir(dir);
+    images = [];
+    setupWatcher(dir);
+  });
+}
+
+function saveImageDir(dir) {
+  storage.set('config', {imageDir: dir}, err => {
+    if (err) {
+      throw err;
+    }
+  });
+}
+
+// dialogを開くとalwaysOnTopが解除されるため
+function setWindowOnTop() {
+  setTimeout(() => {
+    if (!mainWindow.isAlwaysOnTop()) {
+      mainWindow.setAlwaysOnTop(true);
+    }
+  }, WAIT_TIME);
+}
+
+function updateImages(time) {
+  let i = 0;
+  timer = setInterval(() => {
+    sendImage(images[i]);
+    i += 1;
+    if (i > images.length - 1) {
+      i = 0;
+    }
+  }, time);
+}
+
+function sendImage(image) {
+  try {
+    mainWindow.webContents.send('image', JSON.stringify(image));
+  } catch (e) {
+    console.log('Error', e);
+  }
+}
+
+function setupWatcher(dir) {
+  if (watcher && watcher.getWatched()) {
+    watcher.close();
+  }
+
+  watcher = chokidar.watch(dir[0] + EXT_PATTERNS, {ignored: /[\/\\]\./});
+  watcher
+    .on('all', () => {
+      // ファイルに更新がある場合、再シャッフル
+      images = shuffle(images);
+    })
+    .on('add', path => {
+      images.push(path);
+    })
+    .on('unlink', path => images = images.filter(filename => filename !== path))
+    .on('ready', () => {
+      setTimeout(() => {
+        images = shuffle(images);
+        sendImage(images[0]);
+      }, WAIT_TIME);
+    });
+}
+
+
 app.on('window-all-closed', () => {
   clearInterval(timer);
   if (process.platform !== 'darwin') {
@@ -192,19 +210,6 @@ app.on('activate', () => {
 
 app.on('ready', () => {
   mainWindow = createMainWindow();
-
-  storage.get('config', (err, data) => {
-    if (err) {
-      console.log(err);
-    }
-
-    if (data.imageDir) {
-      setupWatcher(data.imageDir);
-    } else {
-      openDirectory();
-    }
-  });
-
   updateImages(INTERVAL_TIME);
 });
 
