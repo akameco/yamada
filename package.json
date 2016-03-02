@@ -9,7 +9,7 @@
     "copy": "cpx '{index.html,package.json,yamada.png}' dist",
     "build": "npm-run-all -s clean copy build:renderer build:main",
     "build:renderer": "browserify index.js -o ./dist/index.js",
-    "build:main": "browserify main.js --im --no-detect-globals --node -d -o ./dist/main.js",
+    "build:main": "browserify main.js --im --no-detect-globals --node -o ./dist/main.js",
     "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.36.9 --overwrite --asar --icon=./res/yamada.icns",
     "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.36.9 --overwrite --asar --icon=./res/yamada.icon",
     "test": "echo \"Error: no test specified\" && exit 1"
