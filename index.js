@@ -11,11 +11,6 @@ menu.append(new MenuItem({
   label: 'ファイルを開く...',
   click: () => ipcRenderer.send('open')
 }));
-menu.append(new MenuItem({type: 'separator'}));
-menu.append(new MenuItem({
-  label: 'yamadaを終了',
-  click: () => app.quit()
-}));
 menu.append(new MenuItem({
   label: 'アスペクト比を維持',
   type: 'checkbox',
@@ -24,6 +19,11 @@ menu.append(new MenuItem({
     keepAspectRatio = !keepAspectRatio;
     console.log("@keepAspectRatio", keepAspectRatio);
   }
+}));
+menu.append(new MenuItem({type: 'separator'}));
+menu.append(new MenuItem({
+  label: 'yamadaを終了',
+  click: () => app.quit()
 }));
 
 const getInlineImageStyle = () => {
