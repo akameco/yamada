@@ -16,16 +16,12 @@
 
 ## Download
 
-You can download yamada from GitHub repository [releases](https://github.com/akameco/yamada/releases) page.
+You can download yamada from GitHub repository [releases](https://github.com/akameco/yamada/releases) page.  
+yamada currently only supports OS X.yamada for windows has several bugs.
 
-yamada currently only supports OS X.
-yamada for windows has several bugs.
 
----
-
-yamadaはGitHubの[リリースページ](https://github.com/akameco/yamada/releases) からダウンロード可能です。
-現在OS Xのみサポートしています。
-windows版にはいくつかのバグがあります。
+yamadaはGitHubの[リリースページ](https://github.com/akameco/yamada/releases) からダウンロード可能です。  
+現在OS Xのみサポートしています。windows版にはいくつかのバグがあります。
 
 ## Installation
 
