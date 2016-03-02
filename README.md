@@ -12,7 +12,7 @@
 
 ## Screenshots
 
-# ![yamada](res/yamada.gif)
+# ![yamada](res/screenshot.gif)
 
 ## Download
 
