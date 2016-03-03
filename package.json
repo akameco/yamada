@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "clean": "rimraf dist",
-    "copy": "cpx '{*.html,package.json,*.png}' dist",
+    "copy": "cpx '{*.html,package.json,*.png,*.css}' dist",
     "build": "npm-run-all -s clean copy build:renderer build:main",
     "build:renderer": "browserify index.js --im -o ./dist/index.js",
     "build:main": "browserify main.js --im --no-detect-globals --node -o ./dist/main.js",
