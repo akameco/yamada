@@ -1,6 +1,6 @@
 {
   "name": "yamada",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Image viewer for making happy.",
   "main": "main.js",
   "scripts": {
