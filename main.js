@@ -35,6 +35,10 @@ function createMainWindow() {
     hasShadow: false
   });
 
+  if (process.env.NODE_ENV === 'development') {
+    win.openDevTools();
+  }
+
   createMenu();
 
   win.loadURL(`file://${__dirname}/index.html`);
