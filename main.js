@@ -31,7 +31,8 @@ function createMainWindow() {
     y: size.height - HEIGHT,
     alwaysOnTop: true,
     transparent: true,
-    frame: false
+    frame: false,
+    hasShadow: false
   });
 
   createMenu();
@@ -211,6 +212,18 @@ app.on('activate', () => {
 app.on('ready', () => {
   mainWindow = createMainWindow();
   updateImages(INTERVAL_TIME);
+});
+
+app.on('browser-window-focus', () => {
+  if (!mainWindow.hasShadow()) {
+    mainWindow.setHasShadow(true);
+  }
+});
+
+app.on('browser-window-blur', () => {
+  if (mainWindow.hasShadow()) {
+    mainWindow.setHasShadow(false);
+  }
 });
 
 ipcMain.on('open', openDirectory);
