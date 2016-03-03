@@ -30,6 +30,7 @@ function createMainWindow() {
     x: size.width - WIDTH,
     y: size.height - HEIGHT,
     alwaysOnTop: true,
+    transparent: true,
     frame: false
   });
 
