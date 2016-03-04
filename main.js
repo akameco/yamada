@@ -160,11 +160,7 @@ function setWindowOnTop() {
 function updateImages(time) {
   let i = 0;
   timer = setInterval(() => {
-    sendImage(images[i]);
-    i += 1;
-    if (i > images.length - 1) {
-      i = 0;
-    }
+    sendImage(images[++i % images.length]);
   }, time);
 }
 
