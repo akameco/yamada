@@ -91,7 +91,7 @@ function createMenu() {
         {
           label: 'Open...',
           accelerator: 'Command+O',
-          click: openDirectory
+          click: openDialogFilterDirectory
         },
         {
           label: 'Alway On Top',
@@ -121,23 +121,30 @@ function loadCofig() {
     if (data.imageDir) {
       setupWatcher(data.imageDir);
     } else {
-      openDirectory();
+      openDialogFilterDirectory();
     }
   });
 }
 
-function openDirectory() {
-  electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, dir => {
-    if (!dir) {
+function openDialogFilterDirectory() {
+  electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
+    if (!paths) {
       return;
     }
 
-    console.log('opened', dir);
+    openDirectory(paths[0]);
     setWindowOnTop();
-    saveImageDir(dir);
-    images = [];
-    setupWatcher(dir);
   });
+}
+
+function openDirectory(dir) {
+  if (dir && typeof dir === 'object') {
+    return;
+  }
+
+  saveImageDir(dir);
+  images = [];
+  setupWatcher(dir);
 }
 
 function saveImageDir(dir) {
@@ -177,7 +184,7 @@ function setupWatcher(dir) {
     watcher.close();
   }
 
-  watcher = chokidar.watch(dir[0] + EXT_PATTERNS, {ignored: /[\/\\]\./});
+  watcher = chokidar.watch(dir + EXT_PATTERNS, {ignored: /[\/\\]\./});
   watcher
     .on('all', () => {
       // ファイルに更新がある場合、再シャッフル
@@ -225,5 +232,3 @@ app.on('browser-window-blur', () => {
     mainWindow.setHasShadow(false);
   }
 });
-
-ipcMain.on('open', openDirectory);
