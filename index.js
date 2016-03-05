@@ -17,7 +17,6 @@ menu.append(new MenuItem({
   checked: keepAspectRatio,
   click: () => {
     keepAspectRatio = !keepAspectRatio;
-    console.log('@keepAspectRatio', keepAspectRatio);
   }
 }));
 menu.append(new MenuItem({type: 'separator'}));
