@@ -38,9 +38,9 @@
   },
   "devDependencies": {
     "browserify": "^13.0.0",
-    "cpx": "^1.2.1",
+    "cpx": "^1.3.1",
     "electron-prebuilt": "^0.37.2",
-    "npm-run-all": "^1.5.1",
+    "npm-run-all": "^1.6.0",
     "rcedit": "^0.4.0",
     "rimraf": "^2.5.2",
     "xo": "*"
