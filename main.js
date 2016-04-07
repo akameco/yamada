@@ -152,7 +152,9 @@ function setupWatcher(dir) {
 	.on('add', path => {
 		images.push(path);
 	})
-	.on('unlink', path => images = images.filter(filename => filename !== path))
+	.on('unlink', path => {
+		images = images.filter(filename => filename !== path);
+	})
 	.on('ready', () => {
 		setTimeout(() => {
 			images = shuffle(images);
