@@ -49,66 +49,26 @@ function createMainWindow() {
 }
 
 function createMenu() {
-  const Menu = electron.Menu;
-  const name = app.getName();
-  const menu = Menu.buildFromTemplate([
-    {
-      label: name,
-      submenu: [
-        {
-          label: 'About ' + name,
-          role: 'about'
-        },
-        {
-          type: 'separator'
-        },
-        {
-          label: 'Services',
-          role: 'services',
-          submenu: []
-        },
-        {
-          type: 'separator'
-        },
-        {
-          label: 'Hide ' + name,
-          accelerator: 'Command+H',
-          role: 'hide'
-        },
-        {
-          label: 'Hide Others',
-          accelerator: 'Command+Alt+H',
-          role: 'hideothers'
-        },
-        {
-          label: 'Show All',
-          role: 'unhide'
-        },
-        {
-          type: 'separator'
-        },
-        {
-          label: 'Open...',
-          accelerator: 'Command+O',
-          click: openDialogFilterDirectory
-        },
-        {
-          label: 'Alway On Top',
-          accelerator: 'Command+T',
-          click: () => mainWindow.setAlwaysOnTop(true)
-        },
-        {
-          type: 'separator'
-        },
-        {
-          label: 'Quit',
-          accelerator: 'Command+Q',
-          click: () => app.quit()
-        }
-      ]
-    }
-  ]);
-  Menu.setApplicationMenu(menu);
+	const Menu = electron.Menu;
+	const name = app.getName();
+	const menu = Menu.buildFromTemplate([{
+		label: name,
+		submenu: [
+			{label: 'About ' + name, role: 'about'},
+			{type: 'separator'},
+			{label: 'Services', role: 'services', submenu: []},
+			{type: 'separator'},
+			{label: 'Hide ' + name, accelerator: 'Command+H', role: 'hide'},
+			{label: 'Hide Others', accelerator: 'Command+Alt+H', role: 'hideothers'},
+			{label: 'Show All', role: 'unhide'},
+			{type: 'separator'},
+			{label: 'Open...', accelerator: 'Command+O', click: openDialogFilterDirectory},
+			{label: 'Alway On Top', accelerator: 'Command+T', click: () => mainWindow.setAlwaysOnTop(true)},
+			{type: 'separator'},
+			{label: 'Quit', accelerator: 'Command+Q', click: () => app.quit()}
+		]
+	}]);
+	Menu.setApplicationMenu(menu);
 }
 
 function loadCofig() {
