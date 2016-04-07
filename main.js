@@ -4,7 +4,6 @@ const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
 const storage = require('electron-json-storage');
 const app = electron.app;
-const ipcMain = electron.ipcMain;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
 const EXT_PATTERNS = '/*.{png|jpg|jpeg|gif}';
@@ -19,34 +18,34 @@ let watcher = null;
 let timer = null;
 
 function createMainWindow() {
-  loadCofig();
-  const electronScreen = electron.screen;
-  const size = electronScreen.getPrimaryDisplay().workAreaSize;
+	loadCofig();
+	const electronScreen = electron.screen;
+	const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
-  const win = new electron.BrowserWindow({
-    title: 'yamada',
-    width: WIDTH,
-    height: HEIGHT,
-    x: size.width - WIDTH,
-    y: size.height - HEIGHT,
-    alwaysOnTop: true,
-    transparent: true,
-    frame: false,
-    hasShadow: false
-  });
+	const win = new electron.BrowserWindow({
+		title: 'yamada',
+		width: WIDTH,
+		height: HEIGHT,
+		x: size.width - WIDTH,
+		y: size.height - HEIGHT,
+		alwaysOnTop: true,
+		transparent: true,
+		frame: false,
+		hasShadow: false
+	});
 
-  if (process.env.NODE_ENV === 'development') {
-    win.openDevTools();
-  }
+	if (process.env.NODE_ENV === 'development') {
+		win.openDevTools();
+	}
 
-  createMenu();
+	createMenu();
 
-  win.loadURL(`file://${__dirname}/index.html`);
-  win.on('closed', () => {
-    mainWindow = null;
-  });
+	win.loadURL(`file://${__dirname}/index.html`);
+	win.on('closed', () => {
+		mainWindow = null;
+	});
 
-  return win;
+	return win;
 }
 
 function createMenu() {
@@ -113,122 +112,122 @@ function createMenu() {
 }
 
 function loadCofig() {
-  storage.get('config', (err, data) => {
-    if (err) {
-      throw err;
-    }
+	storage.get('config', (err, data) => {
+		if (err) {
+			throw err;
+		}
 
-    if (data.imageDir) {
-      setupWatcher(data.imageDir);
-    } else {
-      openDialogFilterDirectory();
-    }
-  });
+		if (data.imageDir) {
+			setupWatcher(data.imageDir);
+		} else {
+			openDialogFilterDirectory();
+		}
+	});
 }
 
 function openDialogFilterDirectory() {
-  electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
-    if (!paths) {
-      return;
-    }
+	electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
+		if (!paths) {
+			return;
+		}
 
-    openDirectory(paths[0]);
-    setWindowOnTop();
-  });
+		openDirectory(paths[0]);
+		setWindowOnTop();
+	});
 }
 
 function openDirectory(dir) {
-  if (dir && typeof dir === 'object') {
-    return;
-  }
+	if (dir && typeof dir === 'object') {
+		return;
+	}
 
-  saveImageDir(dir);
-  images = [];
-  setupWatcher(dir);
+	saveImageDir(dir);
+	images = [];
+	setupWatcher(dir);
 }
 
 function saveImageDir(dir) {
-  storage.set('config', {imageDir: dir}, err => {
-    if (err) {
-      throw err;
-    }
-  });
+	storage.set('config', {imageDir: dir}, err => {
+		if (err) {
+			throw err;
+		}
+	});
 }
 
 // dialogを開くとalwaysOnTopが解除されるため
 function setWindowOnTop() {
-  setTimeout(() => {
-    if (!mainWindow.isAlwaysOnTop()) {
-      mainWindow.setAlwaysOnTop(true);
-    }
-  }, WAIT_TIME);
+	setTimeout(() => {
+		if (!mainWindow.isAlwaysOnTop()) {
+			mainWindow.setAlwaysOnTop(true);
+		}
+	}, WAIT_TIME);
 }
 
 function updateImages(time) {
-  let i = 0;
-  timer = setInterval(() => {
-    sendImage(images[++i % images.length]);
-  }, time);
+	let i = 0;
+	timer = setInterval(() => {
+		sendImage(images[++i % images.length]);
+	}, time);
 }
 
 function sendImage(image) {
-  try {
-    mainWindow.webContents.send('image', JSON.stringify(image));
-  } catch (e) {
-    console.log('Error', e);
-  }
+	try {
+		mainWindow.webContents.send('image', JSON.stringify(image));
+	} catch (e) {
+		console.log('Error', e);
+	}
 }
 
 function setupWatcher(dir) {
-  if (watcher && watcher.getWatched()) {
-    watcher.close();
-  }
+	if (watcher && watcher.getWatched()) {
+		watcher.close();
+	}
 
-  watcher = chokidar.watch(dir + EXT_PATTERNS, {ignored: /[\/\\]\./});
-  watcher
-    .on('all', () => {
-      // ファイルに更新がある場合、再シャッフル
-      images = shuffle(images);
-    })
-    .on('add', path => {
-      images.push(path);
-    })
-    .on('unlink', path => images = images.filter(filename => filename !== path))
-    .on('ready', () => {
-      setTimeout(() => {
-        images = shuffle(images);
-        sendImage(images[0]);
-      }, WAIT_TIME);
-    });
+	watcher = chokidar.watch(dir + EXT_PATTERNS, {ignored: /[\/\\]\./});
+	watcher
+		.on('all', () => {
+			// ファイルに更新がある場合、再シャッフル
+			images = shuffle(images);
+		})
+	.on('add', path => {
+		images.push(path);
+	})
+	.on('unlink', path => images = images.filter(filename => filename !== path))
+	.on('ready', () => {
+		setTimeout(() => {
+			images = shuffle(images);
+			sendImage(images[0]);
+		}, WAIT_TIME);
+	});
 }
 
 app.on('window-all-closed', () => {
-  clearInterval(timer);
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+	clearInterval(timer);
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
 });
 
 app.on('activate', () => {
-  if (!mainWindow) {
-    mainWindow = createMainWindow();
-    updateImages(INTERVAL_TIME);
-  }
+	if (!mainWindow) {
+		mainWindow = createMainWindow();
+		updateImages(INTERVAL_TIME);
+	}
 });
 
 app.on('ready', () => {
-  mainWindow = createMainWindow();
-  updateImages(INTERVAL_TIME);
+	mainWindow = createMainWindow();
+	updateImages(INTERVAL_TIME);
 });
 
 app.on('browser-window-focus', () => {
-  if (!mainWindow.hasShadow()) {
-    mainWindow.setHasShadow(true);
-  }
+	if (!mainWindow.hasShadow()) {
+		mainWindow.setHasShadow(true);
+	}
 });
 
 app.on('browser-window-blur', () => {
-  if (mainWindow.hasShadow()) {
-    mainWindow.setHasShadow(false);
-  }
+	if (mainWindow.hasShadow()) {
+		mainWindow.setHasShadow(false);
+	}
 });

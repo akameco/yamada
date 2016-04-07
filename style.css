@@ -1,28 +1,28 @@
 html, body, .main {
-  height: 100%; 
-  margin: 0;
-  overflow: hidden;
-  -webkit-app-region: drag;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	-webkit-app-region: drag;
 }
 
 body:hover {
-  background: white;
+	background: white;
 }
 
 .main {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
 }
 
 img {
-  border-radius: 5px;
+	border-radius: 5px;
 }
 
 h1 {
-  text-align: center;
+	text-align: center;
 }
 
 img:focus {
-  outline:none;
+	outline:none;
 }

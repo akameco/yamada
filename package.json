@@ -46,9 +46,8 @@
     "xo": "*"
   },
   "xo": {
-    "space": true,
     "env": [
-      "browser"
+      "node","browser"
     ]
   }
 }
