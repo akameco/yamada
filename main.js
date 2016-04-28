@@ -3,6 +3,7 @@ const electron = require('electron');
 const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
 const storage = require('electron-json-storage');
+const meow = require('meow');
 const app = electron.app;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
@@ -72,17 +73,30 @@ function createMenu() {
 }
 
 function loadCofig() {
-	storage.get('config', (err, data) => {
-		if (err) {
-			throw err;
-		}
+	const cli = meow(`
+    Usage
+      $ yamada <input>
 
-		if (data.imageDir) {
-			setupWatcher(data.imageDir);
-		} else {
-			openDialogFilterDirectory();
-		}
-	});
+    Examples
+      $ yamada .
+      $ yamada /Users/akameco/Pictures/
+	`);
+
+	if (cli.input.length === 0) {
+		storage.get('config', (err, data) => {
+			if (err) {
+				throw err;
+			}
+
+			if (data.imageDir) {
+				setupWatcher(data.imageDir);
+			} else {
+				openDialogFilterDirectory();
+			}
+		});
+	} else {
+		setupWatcher(cli.input[0]);
+	}
 }
 
 function openDialogFilterDirectory() {
