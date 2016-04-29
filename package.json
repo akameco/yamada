@@ -42,11 +42,12 @@
     "electron-prebuilt": "^0.37.5",
     "npm-run-all": "^1.7.0",
     "rimraf": "^2.5.2",
-    "xo": "*"
+    "xo": "0.15.0"
   },
   "xo": {
     "env": [
-      "node","browser"
+      "node",
+      "browser"
     ]
   }
 }
