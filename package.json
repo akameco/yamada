@@ -10,9 +10,9 @@
     "build": "npm-run-all -s clean copy build:renderer build:main",
     "build:renderer": "browserify index.js --im -o ./dist/index.js",
     "build:main": "browserify main.js --im --no-detect-globals --node -o ./dist/main.js",
-    "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.37.5 --overwrite --asar --icon=./res/yamada.icns",
-    "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.37.5 --overwrite --asar --icon=./res/yamada.icon",
     "release": "npm-run-all -s build release:*",
+    "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icns",
+    "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -41,7 +41,7 @@
     "browserify": "^13.0.0",
     "cpx": "^1.3.1",
     "electron-packager": "^7.0.1",
-    "electron-prebuilt": "^0.37.7",
+    "electron-prebuilt": "^0.37.8",
     "npm-run-all": "^1.8.0",
     "rimraf": "^2.5.2",
     "xo": "*"
