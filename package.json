@@ -7,12 +7,13 @@
     "start": "electron .",
     "clean": "rimraf dist",
     "copy": "cpx '{*.html,package.json,*.png,*.css}' dist",
+    "copy:sh": "cp yamada.sh release/yamada-darwin-x64/yamada.app/Contents/Resources/",
     "build": "npm-run-all -s clean copy build:renderer build:main",
     "build:renderer": "browserify index.js --im -o ./dist/index.js",
     "build:main": "browserify main.js --im --no-detect-globals --node -o ./dist/main.js",
-    "release": "npm-run-all -s build release:*",
     "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icns",
     "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icon",
+    "release": "npm-run-all -s build release:* copy:sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -33,9 +34,10 @@
   "dependencies": {
     "array-includes": "^3.0.2",
     "chokidar": "^1.4.3",
+    "command-installer": "^0.2.2",
     "electron-json-storage": "^2.0.0",
     "lodash.shuffle": "^4.0.0",
-    "meow": "^3.7.0"
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "browserify": "^13.0.0",

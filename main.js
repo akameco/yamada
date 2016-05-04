@@ -1,9 +1,11 @@
 'use strict';
+const path = require('path');
 const electron = require('electron');
 const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
 const storage = require('electron-json-storage');
-const meow = require('meow');
+const commandInstaller = require('command-installer');
+const parseArgs = require('minimist');
 const app = electron.app;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
@@ -19,7 +21,6 @@ let watcher = null;
 let timer = null;
 
 function createMainWindow() {
-	loadCofig();
 	const electronScreen = electron.screen;
 	const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
@@ -73,16 +74,24 @@ function createMenu() {
 }
 
 function loadCofig() {
-	const cli = meow(`
-    Usage
-      $ yamada <input>
+	const input = parseArgs(process.argv.slice(2));
 
-    Examples
-      $ yamada .
-      $ yamada /Users/akameco/Pictures/
-	`);
+	if (input.h || input.help) {
+		console.log(`
+  Usage
+    $ yamada [path]
 
-	if (cli.input.length === 0) {
+  Options
+    -h, --help     show help
+    -v, --version  show version
+
+  Examples
+    $ yamada .
+    $ yamada ~/Pictures/`);
+		process.exit(0); // eslint-disable-line
+	}
+
+	if (input._.length === 0) {
 		storage.get('config', (err, data) => {
 			if (err) {
 				throw err;
@@ -95,7 +104,7 @@ function loadCofig() {
 			}
 		});
 	} else {
-		setupWatcher(cli.input[0]);
+		setupWatcher(path.resolve(input._[0]));
 	}
 }
 
@@ -177,6 +186,13 @@ function setupWatcher(dir) {
 	});
 }
 
+function getResourcesDirectory() {
+	if (process.env.NODE_ENV === 'development') {
+		return __dirname;
+	}
+	return process.resourcesPath;
+}
+
 app.on('window-all-closed', () => {
 	clearInterval(timer);
 	if (process.platform !== 'darwin') {
@@ -192,8 +208,11 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-	mainWindow = createMainWindow();
-	updateImages(INTERVAL_TIME);
+	commandInstaller(`${getResourcesDirectory()}/yamada.sh`, 'yamada').then(() => {
+		loadCofig();
+		mainWindow = createMainWindow();
+		updateImages(INTERVAL_TIME);
+	});
 });
 
 app.on('browser-window-focus', () => {
