@@ -15,17 +15,22 @@ let watcher = null;
 let timer = null;
 
 function createMainWindow() {
-	const electronScreen = electron.screen;
-	const size = electronScreen.getPrimaryDisplay().workAreaSize;
-	const width = 260;
-	const height = 280;
+	const size = electron.screen.getPrimaryDisplay().workAreaSize;
+	const defaultWindowState = {
+		width: 260,
+		height: 280,
+		x: size.width - 260,
+		y: size.height - 280
+	};
+
+	const lastWindowState = storage.get('windowState') || defaultWindowState;
 
 	const win = new electron.BrowserWindow({
 		title: 'yamada',
-		width: width,
-		height: height,
-		x: size.width - width,
-		y: size.height - height,
+		width: lastWindowState.width,
+		height: lastWindowState.height,
+		x: lastWindowState.x,
+		y: lastWindowState.y,
 		alwaysOnTop: true,
 		transparent: true,
 		frame: false,
@@ -187,4 +192,8 @@ app.on('ready', () => {
 			console.log(e);
 		}
 	});
+});
+
+app.on('before-quit', () => {
+	storage.set('windowState', mainWindow.getBounds());
 });
