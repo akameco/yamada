@@ -74,7 +74,7 @@ function createMenu() {
 }
 
 function loadCofig() {
-	const input = parseArgs(process.argv.slice(2));
+	const input = parseArgs(process.argv.slice(1));
 
 	if (input.h || input.help) {
 		console.log(`
@@ -91,6 +91,7 @@ function loadCofig() {
 		process.exit(0); // eslint-disable-line
 	}
 
+	const executedFrom = input['executed-from'] ? input['executed-from'] : process.cwd();
 	if (input._.length === 0) {
 		storage.get('config', (err, data) => {
 			if (err) {
@@ -104,7 +105,7 @@ function loadCofig() {
 			}
 		});
 	} else {
-		setupWatcher(path.resolve(input._[0]));
+		setupWatcher(path.resolve(executedFrom, input._[0]));
 	}
 }
 
