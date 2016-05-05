@@ -12,7 +12,6 @@ const app = electron.app;
 let mainWindow;
 let images = [];
 let watcher = null;
-let timer = null;
 
 function createMainWindow() {
 	const size = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -50,12 +49,8 @@ function createMainWindow() {
 }
 
 const openDialogFilterDirectory = () => {
-	electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
-		if (!paths) {
-			return;
-		}
-
-		openDirectory(paths[0]);
+	electron.dialog.showOpenDialog(mainWindow, {properties: ['setImageDir']}, paths => {
+		setImageDir(paths);
 		setWindowOnTop();
 	});
 };
@@ -93,14 +88,14 @@ function loadCofig() {
 	}
 }
 
-function openDirectory(dir) {
-	if (dir && typeof dir === 'object') {
+function setImageDir(paths) {
+	if (paths[0] && typeof paths[0] === 'object') {
 		return;
 	}
 
-	storage.set('imageDir', dir);
 	images = [];
-	setupWatcher(dir);
+	setupWatcher(paths[0]);
+	storage.set('imageDir', paths[0]);
 }
 
 // dialogを開くとalwaysOnTopが解除されるため
@@ -112,20 +107,20 @@ function setWindowOnTop() {
 	}, 100);
 }
 
-function updateImages(time) {
-	time = time || 3000;
-	let i = 0;
-	timer = setInterval(() => {
-		sendImage(images[++i % images.length]);
-	}, time);
-}
-
 function sendImage(image) {
 	try {
 		mainWindow.webContents.send('image', JSON.stringify(image));
 	} catch (e) {
 		console.log('Error', e);
 	}
+}
+
+function updateImages(time) {
+	time = time || 3000;
+	let i = 0;
+	setInterval(() => {
+		sendImage(images[++i % images.length]);
+	}, time);
 }
 
 function setupWatcher(dir) {
@@ -166,7 +161,6 @@ app.on('browser-window-blur', () => {
 });
 
 app.on('window-all-closed', () => {
-	clearInterval(timer);
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
