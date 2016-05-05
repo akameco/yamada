@@ -1,16 +1,11 @@
 'use strict';
 const electron = require('electron');
-const BrowserWindow = electron.BrowserWindow;
+const dialog = require('./dialog');
+const Menu = electron.Menu;
 const app = electron.app;
 const appName = app.getName();
-const Menu = electron.Menu;
 
-function setOnTop() {
-	const win = BrowserWindow.getAllWindows()[0];
-	win.setAlwaysOnTop(true);
-}
-
-function createMenu(openDialogFilterDirectory) {
+module.exports = (mainWindow, dispatch) => {
 	const tpl = [
 		{
 			label: appName,
@@ -51,14 +46,14 @@ function createMenu(openDialogFilterDirectory) {
 					label: 'Open...',
 					accelerator: 'Command+O',
 					click() {
-						openDialogFilterDirectory();
+						dialog(mainWindow, dispatch);
 					}
 				},
 				{
 					label: 'Alway On Top',
 					accelerator: 'Command+T',
 					click() {
-						setOnTop();
+						mainWindow.setAlwaysOnTop(true);
 					}
 				},
 				{
@@ -76,6 +71,4 @@ function createMenu(openDialogFilterDirectory) {
 	];
 
 	return Menu.buildFromTemplate(tpl);
-}
-
-module.exports = createMenu;
+};

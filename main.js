@@ -1,17 +1,52 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
-const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
+const redux = require('redux');
+const Watcher = require('./watcher');
 const storage = require('./storage');
 const createMenu = require('./menu');
+const dialog = require('./dialog');
 const app = electron.app;
+const createStore = redux.createStore;
+const combineReducers = redux.combineReducers;
 
 let mainWindow;
-let images = [];
-let watcher = null;
+
+function imageDir(state = null, action) {
+	switch (action.type) {
+		case 'CHANGE_DIR':
+			return action.imageDir;
+		default:
+			return state;
+	}
+}
+
+function images(state = [], action) {
+	switch (action.type) {
+		case 'ADD':
+			return [...state, action.image];
+		case 'REMOVE':
+			return state.filter(image => image !== action.image);
+		case 'SHUFFLE':
+			return shuffle(state);
+		case 'CLEAR':
+			return [];
+		default:
+			return state;
+	}
+}
+
+const rootReducers = combineReducers({images, imageDir});
+let store = createStore(rootReducers);
+
+const watcher = new Watcher(store.dispatch);
+
+store.subscribe(() => {
+	watcher.watch(store.getState().imageDir);
+});
 
 function createMainWindow() {
 	const size = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -48,13 +83,6 @@ function createMainWindow() {
 	return win;
 }
 
-const openDialogFilterDirectory = () => {
-	electron.dialog.showOpenDialog(mainWindow, {properties: ['setImageDir']}, paths => {
-		setImageDir(paths);
-		setWindowOnTop();
-	});
-};
-
 function parseCommandLine() {
 	const n = process.env.NODE_ENV === 'development' ? 2 : 1;
 	const input = parseArgs(process.argv.slice(n));
@@ -87,84 +115,34 @@ function parseCommandLine() {
 	};
 }
 
-function loadCofig(args) {
-	if (args.pathToOpen) {
-		setupWatcher(args.pathToOpen);
-		return;
-	}
-
-	const imageDir = storage.get('imageDir');
-
-	if (imageDir) {
-		setupWatcher(imageDir);
-	} else {
-		openDialogFilterDirectory();
-	}
-}
-
-function setImageDir(paths) {
-	if (paths[0] && typeof paths[0] === 'object') {
-		return;
-	}
-
-	images = [];
-	setupWatcher(paths[0]);
-	storage.set('imageDir', paths[0]);
-}
-
-// dialogを開くとalwaysOnTopが解除されるため
-function setWindowOnTop() {
-	setTimeout(() => {
-		if (!mainWindow.isAlwaysOnTop()) {
-			mainWindow.setAlwaysOnTop(true);
-		}
-	}, 100);
-}
-
-function sendImage(image) {
+function sendAction(action, val) {
 	try {
-		mainWindow.webContents.send('image', JSON.stringify(image));
+		mainWindow.webContents.send(action, JSON.stringify(val));
 	} catch (e) {
 		console.log('Error', e);
 	}
 }
 
+function sendImage(image) {
+	sendAction('image', image);
+}
+
+// function sendRandomImage() {
+// 	const images = store.getState();
+// 	sendAction('image', images[0]);
+// }
+
 function updateImages(time) {
 	time = time || 3000;
 	let i = 0;
 	setInterval(() => {
+		const images = store.getState().images;
 		sendImage(images[++i % images.length]);
 	}, time);
 }
 
-function setupWatcher(dir) {
-	if (watcher && watcher.getWatched()) {
-		watcher.close();
-	}
-
-	watcher = chokidar.watch(dir + '/*.{png|jpg|jpeg|gif}', {ignored: /[\/\\]\./});
-	watcher
-		.on('all', () => {
-			// ファイルに更新がある場合、再シャッフル
-			images = shuffle(images);
-		})
-		.on('add', path => {
-			images.push(path);
-		})
-		.on('unlink', path => {
-			images = images.filter(filename => filename !== path);
-		})
-		.on('ready', () => {
-			setTimeout(() => {
-				images = shuffle(images);
-				sendImage(images[0]);
-			}, 100);
-		});
-}
-
 function start() {
 	const args = parseCommandLine();
-	loadCofig(args);
 
 	app.on('browser-window-focus', () => {
 		if (!mainWindow.hasShadow()) {
@@ -195,9 +173,18 @@ function start() {
 		const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
 		commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
 			try {
-				const appMenu = createMenu(openDialogFilterDirectory);
-				electron.Menu.setApplicationMenu(appMenu);
 				mainWindow = createMainWindow();
+
+				const imageDir = args.pathToOpen ? args.pathToOpen : storage.get('imageDir');
+
+				if (imageDir) {
+					store.dispatch({type: 'CHANGE_DIR', imageDir: imageDir});
+				} else {
+					dialog(mainWindow, store.dispatch);
+				}
+
+				const appMenu = createMenu(mainWindow, store.dispatch);
+				electron.Menu.setApplicationMenu(appMenu);
 				updateImages();
 			} catch (e) {
 				console.log(e);

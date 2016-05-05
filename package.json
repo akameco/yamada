@@ -36,7 +36,8 @@
     "chokidar": "^1.4.3",
     "command-installer": "^0.2.2",
     "lodash.shuffle": "^4.0.0",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "redux": "^3.5.2"
   },
   "devDependencies": {
     "browserify": "^13.0.0",
