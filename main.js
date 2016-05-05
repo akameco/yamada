@@ -139,18 +139,18 @@ function setupWatcher(dir) {
 			// ファイルに更新がある場合、再シャッフル
 			images = shuffle(images);
 		})
-	.on('add', path => {
-		images.push(path);
-	})
-	.on('unlink', path => {
-		images = images.filter(filename => filename !== path);
-	})
-	.on('ready', () => {
-		setTimeout(() => {
-			images = shuffle(images);
-			sendImage(images[0]);
-		}, 100);
-	});
+		.on('add', path => {
+			images.push(path);
+		})
+		.on('unlink', path => {
+			images = images.filter(filename => filename !== path);
+		})
+		.on('ready', () => {
+			setTimeout(() => {
+				images = shuffle(images);
+				sendImage(images[0]);
+			}, 100);
+		});
 }
 
 app.on('browser-window-focus', () => {
