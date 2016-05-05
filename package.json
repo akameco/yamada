@@ -35,7 +35,6 @@
     "array-includes": "^3.0.2",
     "chokidar": "^1.4.3",
     "command-installer": "^0.2.2",
-    "electron-json-storage": "^2.0.0",
     "lodash.shuffle": "^4.0.0",
     "minimist": "^1.2.0"
   },

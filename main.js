@@ -3,7 +3,7 @@ const path = require('path');
 const electron = require('electron');
 const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
-const storage = require('electron-json-storage');
+const storage = require('./storage');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
 const app = electron.app;
@@ -74,7 +74,8 @@ function createMenu() {
 }
 
 function loadCofig() {
-	const input = parseArgs(process.argv.slice(1));
+	const n = process.env.NODE_ENV === 'development' ? 2 : 1;
+	const input = parseArgs(process.argv.slice(n));
 
 	if (input.h || input.help) {
 		console.log(`
@@ -92,20 +93,16 @@ function loadCofig() {
 	}
 
 	const executedFrom = input['executed-from'] ? input['executed-from'] : process.cwd();
-	if (input._.length === 0) {
-		storage.get('config', (err, data) => {
-			if (err) {
-				throw err;
-			}
-
-			if (data.imageDir) {
-				setupWatcher(data.imageDir);
-			} else {
-				openDialogFilterDirectory();
-			}
-		});
-	} else {
+	if (input._.length !== 0) {
 		setupWatcher(path.resolve(executedFrom, input._[0]));
+		return;
+	}
+
+	const imageDir = storage.get('imageDir');
+	if (imageDir) {
+		setupWatcher(imageDir);
+	} else {
+		openDialogFilterDirectory();
 	}
 }
 
@@ -131,11 +128,7 @@ function openDirectory(dir) {
 }
 
 function saveImageDir(dir) {
-	storage.set('config', {imageDir: dir}, err => {
-		if (err) {
-			throw err;
-		}
-	});
+	storage.set('imageDir', dir);
 }
 
 // dialogを開くとalwaysOnTopが解除されるため
