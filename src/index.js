@@ -175,6 +175,7 @@ function start() {
 			try {
 				mainWindow = createMainWindow();
 
+				console.log(args);
 				const imageDir = args.pathToOpen ? args.pathToOpen : storage.get('imageDir');
 
 				if (imageDir) {

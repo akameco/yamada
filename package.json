@@ -2,19 +2,19 @@
   "name": "yamada",
   "version": "0.4.0",
   "description": "Image viewer for making happy.",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "start": "electron .",
     "clean": "rimraf dist",
-    "copy": "cpx '{*.html,package.json,*.png,*.css}' dist",
+    "copy": "cpx 'package.json' dist && cpx './src/{*.html,*.png,*.css}' dist",
     "copy:sh": "cp yamada.sh release/yamada-darwin-x64/yamada.app/Contents/Resources/",
     "build": "npm-run-all -s clean copy build:renderer build:main",
-    "build:renderer": "browserify index.js --im -o ./dist/index.js",
-    "build:main": "browserify main.js --im --no-detect-globals --node -o ./dist/main.js",
+    "build:renderer": "browserify ./src/browser.js --im -o ./dist/browser.js",
+    "build:main": "browserify ./src/index.js --im --no-detect-globals --node -o ./dist/index.js",
     "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icns",
     "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icon",
     "release": "npm-run-all -s build release:* copy:sh",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "xo"
   },
   "repository": {
     "type": "git",
@@ -46,7 +46,7 @@
     "electron-prebuilt": "^0.37.8",
     "npm-run-all": "^1.8.0",
     "rimraf": "^2.5.2",
-    "xo": "*"
+    "xo": "^0.15.0"
   },
   "xo": {
     "env": [
