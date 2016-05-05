@@ -55,7 +55,7 @@ const openDialogFilterDirectory = () => {
 	});
 };
 
-function loadCofig() {
+function parseCommandLine() {
 	const n = process.env.NODE_ENV === 'development' ? 2 : 1;
 	const input = parseArgs(process.argv.slice(n));
 
@@ -74,13 +74,27 @@ function loadCofig() {
 		process.exit(0); // eslint-disable-line
 	}
 
+	if (input.v || input.version) {
+		console.log(app.getName(), app.getVersion());
+		process.exit(0); // eslint-disable-line
+	}
+
 	const executedFrom = input['executed-from'] ? input['executed-from'] : process.cwd();
-	if (input._.length !== 0) {
-		setupWatcher(path.resolve(executedFrom, input._[0]));
+	const pathToOpen = input._.length === 0 ? null : path.resolve(executedFrom, input._[0]);
+
+	return {
+		pathToOpen: pathToOpen
+	};
+}
+
+function loadCofig(args) {
+	if (args.pathToOpen) {
+		setupWatcher(args.pathToOpen);
 		return;
 	}
 
 	const imageDir = storage.get('imageDir');
+
 	if (imageDir) {
 		setupWatcher(imageDir);
 	} else {
@@ -148,46 +162,53 @@ function setupWatcher(dir) {
 		});
 }
 
-app.on('browser-window-focus', () => {
-	if (!mainWindow.hasShadow()) {
-		mainWindow.setHasShadow(true);
-	}
-});
+function start() {
+	const args = parseCommandLine();
+	loadCofig(args);
 
-app.on('browser-window-blur', () => {
-	if (mainWindow.hasShadow()) {
-		mainWindow.setHasShadow(false);
-	}
-});
-
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
-});
-
-app.on('activate', () => {
-	if (!mainWindow) {
-		mainWindow = createMainWindow();
-		updateImages();
-	}
-});
-
-app.on('ready', () => {
-	const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
-	commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
-		loadCofig();
-		try {
-			const appMenu = createMenu(openDialogFilterDirectory);
-			electron.Menu.setApplicationMenu(appMenu);
-			mainWindow = createMainWindow();
-			updateImages();
-		} catch (e) {
-			console.log(e);
+	app.on('browser-window-focus', () => {
+		if (!mainWindow.hasShadow()) {
+			mainWindow.setHasShadow(true);
 		}
 	});
-});
 
-app.on('before-quit', () => {
-	storage.set('windowState', mainWindow.getBounds());
-});
+	app.on('browser-window-blur', () => {
+		if (mainWindow.hasShadow()) {
+			mainWindow.setHasShadow(false);
+		}
+	});
+
+	app.on('window-all-closed', () => {
+		if (process.platform !== 'darwin') {
+			app.quit();
+		}
+	});
+
+	app.on('activate', () => {
+		if (!mainWindow) {
+			mainWindow = createMainWindow();
+			updateImages();
+		}
+	});
+
+	app.on('ready', () => {
+		const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
+		commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
+			try {
+				const appMenu = createMenu(openDialogFilterDirectory);
+				electron.Menu.setApplicationMenu(appMenu);
+				mainWindow = createMainWindow();
+				updateImages();
+			} catch (e) {
+				console.log(e);
+				console.log(e.stack);
+			}
+		});
+	});
+
+	app.on('before-quit', () => {
+		storage.set('windowState', mainWindow.getBounds());
+	});
+}
+
+start();

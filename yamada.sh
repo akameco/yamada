@@ -7,17 +7,19 @@ else
 	exit 1
 fi
 
-while getopts ":h-:" opt; do
+while getopts ":hv-:" opt; do
 	case "$opt" in
 		-)
 			case "${OPTARG}" in
-				help)
+				help|version)
 					EXPECT_OUTPUT=1
+					REDIRECT_STDERR=1
 					;;
 			esac
 			;;
-		h)
+		h|v)
 			EXPECT_OUTPUT=1
+			REDIRECT_STDERR=1
 			;;
 	esac
 done
@@ -25,6 +27,11 @@ done
 APP_NAME="yamada"
 APP="$APP_NAME.app"
 BUNDLE_IDENTIFIER="com.electron.yamada"
+
+if [ $REDIRECT_STDERR ]; then
+	exec 2> /dev/null
+fi
+
 
 if [ -z "${APP_PATH}" ]; then
 	if [ -x "/Applications/$APP" ]; then
