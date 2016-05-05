@@ -9,13 +9,6 @@ const storage = require('./storage');
 const createMenu = require('./menu');
 const app = electron.app;
 
-const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
-const EXT_PATTERNS = '/*.{png|jpg|jpeg|gif}';
-const WAIT_TIME = 100;
-
-const WIDTH = 260;
-const HEIGHT = 280;
-
 let mainWindow;
 let images = [];
 let watcher = null;
@@ -24,13 +17,15 @@ let timer = null;
 function createMainWindow() {
 	const electronScreen = electron.screen;
 	const size = electronScreen.getPrimaryDisplay().workAreaSize;
+	const width = 260;
+	const height = 280;
 
 	const win = new electron.BrowserWindow({
 		title: 'yamada',
-		width: WIDTH,
-		height: HEIGHT,
-		x: size.width - WIDTH,
-		y: size.height - HEIGHT,
+		width: width,
+		height: height,
+		x: size.width - width,
+		y: size.height - height,
 		alwaysOnTop: true,
 		transparent: true,
 		frame: false,
@@ -109,10 +104,11 @@ function setWindowOnTop() {
 		if (!mainWindow.isAlwaysOnTop()) {
 			mainWindow.setAlwaysOnTop(true);
 		}
-	}, WAIT_TIME);
+	}, 100);
 }
 
 function updateImages(time) {
+	time = time || 3000;
 	let i = 0;
 	timer = setInterval(() => {
 		sendImage(images[++i % images.length]);
@@ -132,7 +128,7 @@ function setupWatcher(dir) {
 		watcher.close();
 	}
 
-	watcher = chokidar.watch(dir + EXT_PATTERNS, {ignored: /[\/\\]\./});
+	watcher = chokidar.watch(dir + '/*.{png|jpg|jpeg|gif}', {ignored: /[\/\\]\./});
 	watcher
 		.on('all', () => {
 			// ファイルに更新がある場合、再シャッフル
@@ -148,38 +144,9 @@ function setupWatcher(dir) {
 		setTimeout(() => {
 			images = shuffle(images);
 			sendImage(images[0]);
-		}, WAIT_TIME);
+		}, 100);
 	});
 }
-
-app.on('window-all-closed', () => {
-	clearInterval(timer);
-	if (process.platform !== 'darwin') {
-		app.quit();
-	}
-});
-
-app.on('activate', () => {
-	if (!mainWindow) {
-		mainWindow = createMainWindow();
-		updateImages(INTERVAL_TIME);
-	}
-});
-
-app.on('ready', () => {
-	const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
-	commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
-		loadCofig();
-		try {
-			const appMenu = createMenu(openDialogFilterDirectory);
-			electron.Menu.setApplicationMenu(appMenu);
-			mainWindow = createMainWindow();
-			updateImages(INTERVAL_TIME);
-		} catch (e) {
-			console.log(e);
-		}
-	});
-});
 
 app.on('browser-window-focus', () => {
 	if (!mainWindow.hasShadow()) {
@@ -191,4 +158,33 @@ app.on('browser-window-blur', () => {
 	if (mainWindow.hasShadow()) {
 		mainWindow.setHasShadow(false);
 	}
+});
+
+app.on('window-all-closed', () => {
+	clearInterval(timer);
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
+});
+
+app.on('activate', () => {
+	if (!mainWindow) {
+		mainWindow = createMainWindow();
+		updateImages();
+	}
+});
+
+app.on('ready', () => {
+	const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
+	commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
+		loadCofig();
+		try {
+			const appMenu = createMenu(openDialogFilterDirectory);
+			electron.Menu.setApplicationMenu(appMenu);
+			mainWindow = createMainWindow();
+			updateImages();
+		} catch (e) {
+			console.log(e);
+		}
+	});
 });
