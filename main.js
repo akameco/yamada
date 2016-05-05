@@ -152,13 +152,6 @@ function setupWatcher(dir) {
 	});
 }
 
-function getResourcesDirectory() {
-	if (process.env.NODE_ENV === 'development') {
-		return __dirname;
-	}
-	return process.resourcesPath;
-}
-
 app.on('window-all-closed', () => {
 	clearInterval(timer);
 	if (process.platform !== 'darwin') {
@@ -174,7 +167,8 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-	commandInstaller(`${getResourcesDirectory()}/yamada.sh`, 'yamada').then(() => {
+	const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
+	commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
 		loadCofig();
 		try {
 			const appMenu = createMenu(openDialogFilterDirectory);
