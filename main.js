@@ -3,9 +3,10 @@ const path = require('path');
 const electron = require('electron');
 const chokidar = require('chokidar');
 const shuffle = require('lodash.shuffle');
-const storage = require('./storage');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
+const storage = require('./storage');
+const createMenu = require('./menu');
 const app = electron.app;
 
 const INTERVAL_TIME = process.env.INTERVAL_TIME || 3000;
@@ -40,8 +41,6 @@ function createMainWindow() {
 		win.openDevTools();
 	}
 
-	createMenu();
-
 	win.loadURL(`file://${__dirname}/index.html`);
 	win.on('closed', () => {
 		mainWindow = null;
@@ -50,28 +49,16 @@ function createMainWindow() {
 	return win;
 }
 
-function createMenu() {
-	const Menu = electron.Menu;
-	const name = app.getName();
-	const menu = Menu.buildFromTemplate([{
-		label: name,
-		submenu: [
-			{label: 'About ' + name, role: 'about'},
-			{type: 'separator'},
-			{label: 'Services', role: 'services', submenu: []},
-			{type: 'separator'},
-			{label: 'Hide ' + name, accelerator: 'Command+H', role: 'hide'},
-			{label: 'Hide Others', accelerator: 'Command+Alt+H', role: 'hideothers'},
-			{label: 'Show All', role: 'unhide'},
-			{type: 'separator'},
-			{label: 'Open...', accelerator: 'Command+O', click: openDialogFilterDirectory},
-			{label: 'Alway On Top', accelerator: 'Command+T', click: () => mainWindow.setAlwaysOnTop(true)},
-			{type: 'separator'},
-			{label: 'Quit', accelerator: 'Command+Q', click: () => app.quit()}
-		]
-	}]);
-	Menu.setApplicationMenu(menu);
-}
+const openDialogFilterDirectory = () => {
+	electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
+		if (!paths) {
+			return;
+		}
+
+		openDirectory(paths[0]);
+		setWindowOnTop();
+	});
+};
 
 function loadCofig() {
 	const n = process.env.NODE_ENV === 'development' ? 2 : 1;
@@ -106,29 +93,14 @@ function loadCofig() {
 	}
 }
 
-function openDialogFilterDirectory() {
-	electron.dialog.showOpenDialog(mainWindow, {properties: ['openDirectory']}, paths => {
-		if (!paths) {
-			return;
-		}
-
-		openDirectory(paths[0]);
-		setWindowOnTop();
-	});
-}
-
 function openDirectory(dir) {
 	if (dir && typeof dir === 'object') {
 		return;
 	}
 
-	saveImageDir(dir);
+	storage.set('imageDir', dir);
 	images = [];
 	setupWatcher(dir);
-}
-
-function saveImageDir(dir) {
-	storage.set('imageDir', dir);
 }
 
 // dialogを開くとalwaysOnTopが解除されるため
@@ -204,8 +176,14 @@ app.on('activate', () => {
 app.on('ready', () => {
 	commandInstaller(`${getResourcesDirectory()}/yamada.sh`, 'yamada').then(() => {
 		loadCofig();
-		mainWindow = createMainWindow();
-		updateImages(INTERVAL_TIME);
+		try {
+			const appMenu = createMenu(openDialogFilterDirectory);
+			electron.Menu.setApplicationMenu(appMenu);
+			mainWindow = createMainWindow();
+			updateImages(INTERVAL_TIME);
+		} catch (e) {
+			console.log(e);
+		}
 	});
 });
 
