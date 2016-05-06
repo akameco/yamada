@@ -5,7 +5,7 @@ const call = effects.call;
 const put = effects.put;
 const fork = effects.fork;
 const select = effects.select;
-const sendImage = require('./actions').sendImage;
+const sendImage = require('../actions/').sendImage;
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
