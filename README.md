@@ -14,23 +14,14 @@
 
 # ![yamada](res/screenshot.gif)
 
+
 ## Download
 
-You can download yamada from GitHub repository [releases](https://github.com/akameco/yamada/releases) page.  
-yamada currently only supports OS X.
+### OSX
 
-yamadaはGitHubの[リリースページ](https://github.com/akameco/yamada/releases) からダウンロード可能です。  
-現在OS Xのみサポートしています。
-
-## Installation
-
-```
-$ npm install
-```
+[Download](https://github.com/akameco/yamada/releases)
 
 ## Development
-
-To run the actual electron app
 
 ```
 $ npm start
