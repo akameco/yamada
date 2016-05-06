@@ -13,6 +13,8 @@ class Watcher {
 			return;
 		}
 		this.dir = dir;
+		this.dispatch({type: 'RESET_INDEX'});
+		this.dispatch({type: 'CLEAR'});
 
 		// storeに保存 別関数に分ける？
 		storage.set('imageDir', this.dir);

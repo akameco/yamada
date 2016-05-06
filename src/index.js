@@ -1,52 +1,39 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
-const shuffle = require('lodash.shuffle');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
 const redux = require('redux');
+const createSagaMiddleware = require('redux-saga').default;
 const Watcher = require('./watcher');
 const storage = require('./storage');
 const createMenu = require('./menu');
 const dialog = require('./dialog');
+const rootReducers = require('./reducers');
+const rootSaga = require('./sagas');
 const app = electron.app;
 const createStore = redux.createStore;
-const combineReducers = redux.combineReducers;
+const applyMiddleware = redux.applyMiddleware;
 
 let mainWindow;
 
-function imageDir(state = null, action) {
-	switch (action.type) {
-		case 'CHANGE_DIR':
-			return action.imageDir;
-		default:
-			return state;
-	}
-}
-
-function images(state = [], action) {
-	switch (action.type) {
-		case 'ADD':
-			return [...state, action.image];
-		case 'REMOVE':
-			return state.filter(image => image !== action.image);
-		case 'SHUFFLE':
-			return shuffle(state);
-		case 'CLEAR':
-			return [];
-		default:
-			return state;
-	}
-}
-
-const rootReducers = combineReducers({images, imageDir});
-let store = createStore(rootReducers);
+const sagaMiddleware = createSagaMiddleware();
+let store = createStore(rootReducers, applyMiddleware(sagaMiddleware));
 
 const watcher = new Watcher(store.dispatch);
 
+sagaMiddleware.run(rootSaga, store.getState);
+
 store.subscribe(() => {
-	watcher.watch(store.getState().imageDir);
+	watcher.watch(store.getState().app.imageDir);
 });
+
+function updateImages() {
+	const time = 1000;
+	setInterval(() => {
+		store.dispatch({type: 'UPDATE_IMAGE'});
+	}, time);
+}
 
 function createMainWindow() {
 	const size = electron.screen.getPrimaryDisplay().workAreaSize;
@@ -115,32 +102,6 @@ function parseCommandLine() {
 	};
 }
 
-function sendAction(action, val) {
-	try {
-		mainWindow.webContents.send(action, JSON.stringify(val));
-	} catch (e) {
-		console.log('Error', e);
-	}
-}
-
-function sendImage(image) {
-	sendAction('image', image);
-}
-
-// function sendRandomImage() {
-// 	const images = store.getState();
-// 	sendAction('image', images[0]);
-// }
-
-function updateImages(time) {
-	time = time || 3000;
-	let i = 0;
-	setInterval(() => {
-		const images = store.getState().images;
-		sendImage(images[++i % images.length]);
-	}, time);
-}
-
 function start() {
 	const args = parseCommandLine();
 
@@ -175,16 +136,15 @@ function start() {
 			try {
 				mainWindow = createMainWindow();
 
-				console.log(args);
 				const imageDir = args.pathToOpen ? args.pathToOpen : storage.get('imageDir');
 
 				if (imageDir) {
 					store.dispatch({type: 'CHANGE_DIR', imageDir: imageDir});
 				} else {
-					dialog(mainWindow, store.dispatch);
+					dialog(store.dispatch);
 				}
 
-				const appMenu = createMenu(mainWindow, store.dispatch);
+				const appMenu = createMenu(store.dispatch);
 				electron.Menu.setApplicationMenu(appMenu);
 				updateImages();
 			} catch (e) {

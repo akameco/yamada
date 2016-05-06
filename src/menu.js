@@ -1,11 +1,12 @@
 'use strict';
 const electron = require('electron');
 const dialog = require('./dialog');
+const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const app = electron.app;
 const appName = app.getName();
 
-module.exports = (mainWindow, dispatch) => {
+module.exports = dispatch => {
 	const tpl = [
 		{
 			label: appName,
@@ -46,14 +47,15 @@ module.exports = (mainWindow, dispatch) => {
 					label: 'Open...',
 					accelerator: 'Command+O',
 					click() {
-						dialog(mainWindow, dispatch);
+						dialog(dispatch);
 					}
 				},
 				{
 					label: 'Alway On Top',
 					accelerator: 'Command+T',
 					click() {
-						mainWindow.setAlwaysOnTop(true);
+						const win = BrowserWindow.getAllWindows()[0];
+						win.setAlwaysOnTop(true);
 					}
 				},
 				{
