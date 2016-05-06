@@ -7,7 +7,7 @@ const fork = effects.fork;
 const select = effects.select;
 const sendImage = require('./actions').sendImage;
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function* watchAndLog() {
 	while (true) { //eslint-disable-line
@@ -16,7 +16,7 @@ function* watchAndLog() {
 	}
 }
 
-function* updateImg(getState) {
+function* updateImg() {
 	while (true) { // eslint-disable-line
 		yield take('UPDATE_IMAGE');
 		const images = yield select(state => state.images);
@@ -26,6 +26,7 @@ function* updateImg(getState) {
 		yield put({type: 'INCREMENT_INDEX', index: (index + 1) % images.length});
 	}
 }
+
 function* start() {
 	yield take('START');
 	while (yield select(state => state.app.isRunning)) {
@@ -34,7 +35,7 @@ function* start() {
 	}
 }
 
-module.exports = function* rootSaga(getState) {
+module.exports = function* rootSaga() {
 	yield fork(updateImg);
 	yield fork(watchAndLog);
 	yield fork(start);

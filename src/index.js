@@ -22,7 +22,7 @@ let store = createStore(rootReducers, applyMiddleware(sagaMiddleware));
 
 const watcher = new Watcher(store.dispatch);
 
-sagaMiddleware.run(rootSaga, store.getState);
+sagaMiddleware.run(rootSaga);
 
 store.subscribe(() => {
 	watcher.watch(store.getState().app.imageDir);
