@@ -28,13 +28,6 @@ store.subscribe(() => {
 	watcher.watch(store.getState().app.imageDir);
 });
 
-function updateImages() {
-	const time = 1000;
-	setInterval(() => {
-		store.dispatch({type: 'UPDATE_IMAGE'});
-	}, time);
-}
-
 function createMainWindow() {
 	const size = electron.screen.getPrimaryDisplay().workAreaSize;
 	const defaultWindowState = {
@@ -126,7 +119,6 @@ function start() {
 	app.on('activate', () => {
 		if (!mainWindow) {
 			mainWindow = createMainWindow();
-			updateImages();
 		}
 	});
 
@@ -146,7 +138,7 @@ function start() {
 
 				const appMenu = createMenu(store.dispatch);
 				electron.Menu.setApplicationMenu(appMenu);
-				updateImages();
+				store.dispatch({type: 'START'});
 			} catch (e) {
 				console.log(e);
 				console.log(e.stack);
