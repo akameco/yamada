@@ -1,14 +1,14 @@
 # ![yamada](res/yamada.png)
 
-> best image viewer while at work.
-> 最高の作業用画像ビューア
+> ミニマム作業用画像ビューア
 
-## Features
+## 特徴
 
 - Slideshow of your favorite images
 - Always on Top
 - No Title bar
 - Easy Moving
+- CLI Support
 
 ## Screenshots
 
@@ -20,6 +20,23 @@
 ### OSX
 
 [Download](https://github.com/akameco/yamada/releases)
+
+ダウンロード後、zipを展開し`/Applications`に配置してください。
+
+## CLI
+
+CLIをサポートしています。
+ターミナルから現在のディレクトリを簡単に開くことができます。
+
+```
+$ yamada .
+```
+
+### ヘルプ
+
+```
+$ yamada -h
+```
 
 ## Development
 
