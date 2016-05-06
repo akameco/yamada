@@ -10,7 +10,7 @@
     "copy:sh": "cp yamada.sh release/yamada-darwin-x64/yamada.app/Contents/Resources/",
     "build": "npm-run-all -s clean copy build:renderer build:main",
     "build:renderer": "browserify ./src/browser.js --im -o ./dist/browser.js",
-    "build:main": "browserify ./src/index.js --im --no-detect-globals --node -o ./dist/index.js",
+    "build:main": "browserify ./src/index.js -t [ envify --NODE_ENV production ] --im --no-detect-globals --node -o ./dist/index.js",
     "release:osx": "electron-packager ./dist yamada --out=./release --platform=darwin --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icns",
     "release:win": "electron-packager ./dist yamada --out=./release --platform=win32 --arch=x64 --version=0.37.8 --overwrite --asar --icon=./res/yamada.icon",
     "release": "npm-run-all -s build release:* copy:sh",
@@ -45,6 +45,7 @@
     "cpx": "^1.3.1",
     "electron-packager": "^7.0.1",
     "electron-prebuilt": "^0.37.8",
+    "envify": "^3.4.0",
     "npm-run-all": "^1.8.0",
     "rimraf": "^2.5.2",
     "xo": "^0.15.0"
