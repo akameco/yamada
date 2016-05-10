@@ -1,8 +1,7 @@
 'use strict';
-const {take, call, put, fork, select} = require('redux-saga').effects;
+const {delay, effects} = require('redux-saga');
+const {take, call, put, fork, select} = effects;
 const {sendImage} = require('../actions/');
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function * watchAndLog() {
 	while (true) { //eslint-disable-line
