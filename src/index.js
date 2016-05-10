@@ -30,25 +30,19 @@ store.subscribe(() => {
 function createMainWindow() {
 	const size = electron.screen.getPrimaryDisplay().workAreaSize;
 	const defaultWindowState = {
+		title: 'yamada',
 		width: 260,
 		height: 280,
 		x: size.width - 260,
-		y: size.height - 280
-	};
-
-	const lastWindowState = storage.get('windowState') || defaultWindowState;
-
-	const win = new BrowserWindow({
-		title: 'yamada',
-		width: lastWindowState.width,
-		height: lastWindowState.height,
-		x: lastWindowState.x,
-		y: lastWindowState.y,
+		y: size.height - 280,
 		alwaysOnTop: true,
 		transparent: true,
 		frame: false,
 		hasShadow: false
-	});
+	};
+
+	const windowState = Object.assign({}, defaultWindowState, storage.get('windowState'));
+	const win = new BrowserWindow(windowState);
 
 	if (process.env.NODE_ENV === 'development') {
 		win.openDevTools();
@@ -151,7 +145,7 @@ function start() {
 	});
 
 	app.on('before-quit', () => {
-		storage.set('windowState', mainWindow.getBounds());
+		storage.set('windowState', Object.assign({}, mainWindow.getBounds(), {alwaysOnTop: mainWindow.isAlwaysOnTop()}));
 	});
 }
 
