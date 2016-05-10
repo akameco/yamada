@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
-const {app, BrowserWindow, Menu} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
 const redux = require('redux');
@@ -143,6 +143,10 @@ function start() {
 				console.log(e);
 				console.log(e.stack);
 			}
+		});
+
+		ipcMain.on('open', () => {
+			dialog(store.dispatch);
 		});
 	});
 
