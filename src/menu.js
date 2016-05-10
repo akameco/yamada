@@ -1,9 +1,6 @@
 'use strict';
-const electron = require('electron');
+const {BrowserWindow, Menu, app} = require('electron');
 const dialog = require('./dialog');
-const BrowserWindow = electron.BrowserWindow;
-const Menu = electron.Menu;
-const app = electron.app;
 const appName = app.getName();
 
 module.exports = dispatch => {
@@ -12,7 +9,7 @@ module.exports = dispatch => {
 			label: appName,
 			submenu: [
 				{
-					label: 'About ' + appName,
+					label: `About ${appName}`,
 					role: 'about'
 				},
 				{
@@ -27,7 +24,7 @@ module.exports = dispatch => {
 					type: 'separator'
 				},
 				{
-					label: 'Hide ' + appName,
+					label: `Hide ${appName}`,
 					accelerator: 'Command+H',
 					role: 'hide'
 				},

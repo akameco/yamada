@@ -1,12 +1,9 @@
 'use strict';
-const ipcRenderer = global.require('electron').ipcRenderer;
-const remote = require('electron').remote;
-const app = remote.app;
-const Menu = remote.Menu;
-const MenuItem = remote.MenuItem;
+const {ipcRenderer, remote} = global.require('electron');
+const {app, Menu, MenuItem} = remote;
 
 let keepAspectRatio = false;
-let menu = new Menu();
+const menu = new Menu();
 menu.append(new MenuItem({
 	label: 'ファイルを開く...',
 	click: () => ipcRenderer.send('open')

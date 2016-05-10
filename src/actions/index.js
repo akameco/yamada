@@ -1,6 +1,5 @@
 'use strict';
-const electron = require('electron');
-const BrowserWindow = electron.BrowserWindow;
+const {BrowserWindow} = require('electron');
 
 function sendAction(action, val) {
 	const win = BrowserWindow.getAllWindows()[0];

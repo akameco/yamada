@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const electron = require('electron');
+const {app, BrowserWindow, Menu} = require('electron');
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
 const redux = require('redux');
@@ -11,14 +12,12 @@ const createMenu = require('./menu');
 const dialog = require('./dialog');
 const rootReducers = require('./reducers/');
 const rootSaga = require('./sagas/');
-const app = electron.app;
-const createStore = redux.createStore;
-const applyMiddleware = redux.applyMiddleware;
+const {createStore, applyMiddleware} = redux;
 
 let mainWindow;
 
 const sagaMiddleware = createSagaMiddleware();
-let store = createStore(rootReducers, applyMiddleware(sagaMiddleware));
+const store = createStore(rootReducers, applyMiddleware(sagaMiddleware));
 
 const watcher = new Watcher(store.dispatch);
 
@@ -39,7 +38,7 @@ function createMainWindow() {
 
 	const lastWindowState = storage.get('windowState') || defaultWindowState;
 
-	const win = new electron.BrowserWindow({
+	const win = new BrowserWindow({
 		title: 'yamada',
 		width: lastWindowState.width,
 		height: lastWindowState.height,
@@ -91,7 +90,7 @@ function parseCommandLine() {
 	const pathToOpen = input._.length === 0 ? null : path.resolve(executedFrom, input._[0]);
 
 	return {
-		pathToOpen: pathToOpen
+		pathToOpen
 	};
 }
 
@@ -124,6 +123,7 @@ function start() {
 
 	app.on('ready', () => {
 		const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
+		console.log(process.versions);
 		commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
 			try {
 				mainWindow = createMainWindow();
@@ -131,13 +131,13 @@ function start() {
 				const imageDir = args.pathToOpen ? args.pathToOpen : storage.get('imageDir');
 
 				if (imageDir) {
-					store.dispatch({type: 'CHANGE_DIR', imageDir: imageDir});
+					store.dispatch({type: 'CHANGE_DIR', imageDir});
 				} else {
 					dialog(store.dispatch);
 				}
 
 				const appMenu = createMenu(store.dispatch);
-				electron.Menu.setApplicationMenu(appMenu);
+				Menu.setApplicationMenu(appMenu);
 				store.dispatch({type: 'START'});
 			} catch (e) {
 				console.log(e);

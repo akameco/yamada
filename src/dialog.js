@@ -1,6 +1,5 @@
 'use strict';
-const electron = require('electron');
-const BrowserWindow = electron.BrowserWindow;
+const {BrowserWindow, dialog} = require('electron');
 
 // dialogを開くとalwaysOnTopが解除されるため
 function setWindowOnTop(win) {
@@ -13,7 +12,7 @@ function setWindowOnTop(win) {
 
 module.exports = dispatch => {
 	const win = BrowserWindow.getAllWindows()[0];
-	electron.dialog.showOpenDialog(win, {properties: ['openDirectory']}, paths => {
+	dialog.showOpenDialog(win, {properties: ['openDirectory']}, paths => {
 		if (paths && paths[0]) {
 			dispatch({type: 'CHANGE_DIR', imageDir: paths[0]});
 		}

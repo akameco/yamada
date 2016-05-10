@@ -1,22 +1,17 @@
 'use strict';
-const effects = require('redux-saga').effects;
-const take = effects.take;
-const call = effects.call;
-const put = effects.put;
-const fork = effects.fork;
-const select = effects.select;
-const sendImage = require('../actions/').sendImage;
+const {take, call, put, fork, select} = require('redux-saga').effects;
+const {sendImage} = require('../actions/');
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function* watchAndLog() {
+function * watchAndLog() {
 	while (true) { //eslint-disable-line
 		const action = yield take('*');
 		console.log('action', action);
 	}
 }
 
-function* updateImg() {
+function * updateImg() {
 	while (true) { // eslint-disable-line
 		yield take('UPDATE_IMAGE');
 		const images = yield select(state => state.images);
@@ -27,7 +22,7 @@ function* updateImg() {
 	}
 }
 
-function* start() {
+function * start() {
 	yield take('START');
 	while (yield select(state => state.app.isRunning)) {
 		yield put({type: 'UPDATE_IMAGE'});
@@ -35,7 +30,7 @@ function* start() {
 	}
 }
 
-module.exports = function* rootSaga() {
+module.exports = function * rootSaga() {
 	yield fork(updateImg);
 	yield fork(watchAndLog);
 	yield fork(start);

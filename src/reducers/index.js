@@ -1,7 +1,6 @@
 'use strict';
-const redux = require('redux');
 const shuffle = require('lodash.shuffle');
-const combineReducers = redux.combineReducers;
+const {combineReducers} = require('redux');
 
 const initialState = {
 	imageDir: null,
