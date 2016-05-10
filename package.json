@@ -33,7 +33,7 @@
   "homepage": "https://github.com/akameco/yamada#readme",
   "dependencies": {
     "array-includes": "^3.0.2",
-    "chokidar": "^1.4.3",
+    "chokidar": "^1.5.0",
     "command-installer": "^0.2.2",
     "lodash.shuffle": "^4.0.0",
     "minimist": "^1.2.0",
