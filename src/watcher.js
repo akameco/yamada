@@ -25,8 +25,6 @@ class Watcher {
 
 		this.watcher = chokidar.watch(`${dir}/**/*.{png|jpg|jpeg|gif}`, {ignored: /[\/\\]\./});
 		this.watcher.on('all', () => {
-			// ファイルに更新がある場合、再シャッフル
-			this.dispatch({type: 'SHUFFLE'});
 		});
 
 		this.watcher.on('add', path => {
