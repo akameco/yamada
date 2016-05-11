@@ -30,7 +30,9 @@ function * start() {
 }
 
 module.exports = function * rootSaga() {
-	yield fork(updateImg);
-	yield fork(watchAndLog);
-	yield fork(start);
+	const forks = [fork(updateImg), fork(start)];
+	if (process.env.NODE_ENV === 'development') {
+		forks.push(fork(watchAndLog));
+	}
+	yield forks;
 };
