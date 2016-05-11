@@ -1,5 +1,5 @@
 'use strict';
-const {BrowserWindow, Menu, app} = require('electron');
+const {BrowserWindow, Menu, app, shell} = require('electron');
 const dialog = require('./dialog');
 const appName = app.getName();
 
@@ -12,14 +12,14 @@ module.exports = dispatch => {
 			label: appName,
 			submenu: [
 				{
-					label: `About ${appName}`,
+					label: `${appName}について`,
 					role: 'about'
 				},
 				{
 					type: 'separator'
 				},
 				{
-					label: 'Services',
+					label: 'サービス',
 					role: 'services',
 					submenu: []
 				},
@@ -27,22 +27,34 @@ module.exports = dispatch => {
 					type: 'separator'
 				},
 				{
-					label: `Hide ${appName}`,
+					label: `${appName}を隠す`,
 					accelerator: 'Command+H',
 					role: 'hide'
 				},
 				{
-					label: 'Hide Others',
+					label: '他を隠す',
 					accelerator: 'Command+Alt+H',
 					role: 'hideothers'
 				},
 				{
-					label: 'Show All',
+					label: 'すべてを表示',
 					role: 'unhide'
 				},
 				{
 					type: 'separator'
 				},
+				{
+					label: '終了',
+					accelerator: 'Command+Q',
+					click() {
+						app.quit();
+					}
+				}
+			]
+		},
+		{
+			label: 'ファイル',
+			submenu: [
 				{
 					label: '開く...',
 					accelerator: 'Command+O',
@@ -51,7 +63,22 @@ module.exports = dispatch => {
 					}
 				},
 				{
-					label: '最前面にする',
+					type: 'separator'
+				},
+				{
+					label: 'シャッフル',
+					click() {
+						dispatch({type: 'SHUFFLE'});
+					}
+				}
+			]
+		},
+		{
+			label: 'ウインドウ',
+			role: 'window',
+			submenu: [
+				{
+					label: '最前面に固定',
 					accelerator: 'Command+T',
 					type: 'checkbox',
 					clicked: isOnTop,
@@ -59,15 +86,17 @@ module.exports = dispatch => {
 						isOnTop = win.isAlwaysOnTop();
 						win.setAlwaysOnTop(!isOnTop);
 					}
-				},
+				}
+			]
+		},
+		{
+			label: 'ヘルプ',
+			role: 'help',
+			submenu: [
 				{
-					type: 'separator'
-				},
-				{
-					label: 'Quit',
-					accelerator: 'Command+Q',
+					label: 'Learn More',
 					click() {
-						app.quit();
+						shell.openExternal('https://github.com/akameco/yamada');
 					}
 				}
 			]
