@@ -117,7 +117,6 @@ function start() {
 
 	app.on('ready', () => {
 		const resourcesDirectory = process.env.NODE_ENV === 'development' ? __dirname : process.resourcesPath;
-		console.log(process.versions);
 		commandInstaller(`${resourcesDirectory}/yamada.sh`, 'yamada').then(() => {
 			try {
 				mainWindow = createMainWindow();
