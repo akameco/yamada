@@ -38,7 +38,7 @@
     "lodash.shuffle": "^4.0.0",
     "minimist": "^1.2.0",
     "redux": "^3.5.2",
-    "redux-saga": "^0.10.2"
+    "redux-saga": "^0.10.4"
   },
   "devDependencies": {
     "browserify": "^13.0.0",
