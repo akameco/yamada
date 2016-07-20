@@ -1,17 +1,19 @@
+/* eslint-disable no-constant-condition */
 'use strict';
 const {delay, effects} = require('redux-saga');
+
 const {take, call, put, fork, select} = effects;
 const {sendImage} = require('../actions/');
 
 function * watchAndLog() {
-	while (true) { //eslint-disable-line
+	while (true) {
 		const action = yield take('*');
 		console.log('action', action);
 	}
 }
 
 function * updateImg() {
-	while (true) { // eslint-disable-line
+	while (true) {
 		yield take('UPDATE_IMAGE');
 		const images = yield select(state => state.images);
 		let index = yield select(state => state.app.currentIndex);

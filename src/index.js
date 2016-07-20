@@ -1,7 +1,6 @@
 'use strict';
 const path = require('path');
-const electron = require('electron');
-const {app, BrowserWindow, Menu, ipcMain} = require('electron');
+const electron = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const commandInstaller = require('command-installer');
 const parseArgs = require('minimist');
 const redux = require('redux');
@@ -12,6 +11,9 @@ const createMenu = require('./menu');
 const dialog = require('./dialog');
 const rootReducers = require('./reducers/');
 const rootSaga = require('./sagas/');
+
+const {app, BrowserWindow, Menu, ipcMain} = electron;
+
 const {createStore, applyMiddleware} = redux;
 
 let mainWindow;
@@ -72,12 +74,12 @@ function parseCommandLine() {
   Examples
     $ yamada .
     $ yamada ~/Pictures/`);
-		process.exit(0); // eslint-disable-line
+		process.exit(0); // eslint-disable-line xo/no-process-exit
 	}
 
 	if (input.v || input.version) {
 		console.log(app.getName(), app.getVersion());
-		process.exit(0); // eslint-disable-line
+		process.exit(0); // eslint-disable-line xo/no-process-exit
 	}
 
 	const executedFrom = input['executed-from'] ? input['executed-from'] : process.cwd();
@@ -132,9 +134,9 @@ function start() {
 				const appMenu = createMenu(store.dispatch);
 				Menu.setApplicationMenu(appMenu);
 				store.dispatch({type: 'START'});
-			} catch (e) {
-				console.log(e);
-				console.log(e.stack);
+			} catch (err) {
+				console.log(err);
+				console.log(err.stack);
 			}
 		});
 

@@ -1,7 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 'use strict';
 const fs = require('fs');
 const path = require('path');
 const {app} = require('electron');
+
 const dataFilePath = path.join(app.getPath('userData'), 'data.json');
 
 function readData() {
