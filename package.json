@@ -47,7 +47,7 @@
     "electron-prebuilt": "^1.2.8",
     "envify": "^3.4.1",
     "npm-run-all": "^2.3.0",
-    "rimraf": "^2.5.3",
+    "rimraf": "^2.5.4",
     "xo": "^0.16.0"
   },
   "xo": {
