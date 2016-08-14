@@ -1,4 +1,3 @@
- /* eslint-disable import/no-extraneous-dependencies */
 'use strict';
 const {BrowserWindow, dialog} = require('electron');
 
