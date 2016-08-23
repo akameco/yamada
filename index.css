@@ -1,4 +1,4 @@
-html, body, .main {
+html, body, #root {
 	height: 100%;
 	margin: 0;
 	overflow: hidden;
@@ -9,20 +9,31 @@ body:hover {
 	background: white;
 }
 
-.main {
+#root {
 	display: flex;
 	align-items: flex-end;
 	justify-content: flex-end;
-}
-
-img {
-	border-radius: 5px;
 }
 
 h1 {
 	text-align: center;
 }
 
+img {
+	border-radius: 5px;
+	opacity: 0;
+	animation: fade-in .1s alternate both;
+}
+
 img:focus {
 	outline:none;
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }

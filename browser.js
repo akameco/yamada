@@ -1,22 +1,44 @@
 'use strict';
 const {ipcRenderer, remote} = global.require('electron');
-const {app, Menu, MenuItem} = remote;
+const Config = require('electron-config');
 
-let keepAspectRatio = false;
+const {app, Menu, MenuItem} = remote;
+const win = remote.getCurrentWindow();
+const config = new Config();
+
+let keepAspectRatio = config.get('keepAspectRatio') || false;
+
 const menu = new Menu();
+
 menu.append(new MenuItem({
 	label: 'ファイルを開く...',
 	click: () => ipcRenderer.send('open')
 }));
+
 menu.append(new MenuItem({
 	label: 'アスペクト比を維持',
 	type: 'checkbox',
 	checked: keepAspectRatio,
 	click: () => {
 		keepAspectRatio = !keepAspectRatio;
+		config.set('keepAspectRatio', keepAspectRatio);
 	}
 }));
+
 menu.append(new MenuItem({type: 'separator'}));
+
+menu.append(new MenuItem({
+	label: '最前面に固定する',
+	type: 'checkbox',
+	checked: win.isAlwaysOnTop(),
+	click: () => {
+		win.setAlwaysOnTop(!win.isAlwaysOnTop());
+		config.set('alwaysOnTop', win.isAlwaysOnTop());
+	}
+}));
+
+menu.append(new MenuItem({type: 'separator'}));
+
 menu.append(new MenuItem({
 	label: 'yamadaを終了',
 	click: () => app.quit()
@@ -33,8 +55,10 @@ window.addEventListener('contextmenu', e => {
 }, false);
 
 document.addEventListener('DOMContentLoaded', () => {
-	const mainEl = document.querySelector('.main');
-	ipcRenderer.on('image', (ev, data) => {
-		mainEl.innerHTML = `<img src='${JSON.parse(data)}' ${getInlineImageStyle()}>`;
+	const root = document.querySelector('#root');
+	ipcRenderer.on('image', (ev, imagePath) => {
+		console.log(imagePath);
+		root.innerHTML = `<img src='${imagePath}' ${getInlineImageStyle()}>`;
 	});
 });
+

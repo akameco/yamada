@@ -1,4 +1,4 @@
-# ![yamada](res/yamada.png)
+# ![yamada](yamada.png)
 
 > ミニマム作業用画像ビューア
 
@@ -12,12 +12,12 @@
 
 ## Screenshots
 
-# ![yamada](res/screenshot.gif)
+# ![yamada](media/screenshot.gif)
 
 
 ## Download
 
-### OSX
+### MacOS
 
 [Download](https://github.com/akameco/yamada/releases)
 
@@ -35,7 +35,7 @@ $ yamada .
 ### ヘルプ
 
 ```
-$ yamada -h
+$ yamada --help
 ```
 
 ## Development
@@ -54,4 +54,4 @@ $ npm start
 
 ## License
 
-MIT
+MIT © [akameco](http://akameco.github.io)
