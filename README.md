@@ -5,18 +5,18 @@
 
 ## 特徴
 
-- Slideshow of your favorite images
-- Always on Top
-- No Title bar
-- Easy Moving
-- CLI Support
+- お気に入りの画像フォルダをスライドショー
+- 最前面に表示可能
+- フレームレスウィンドウ
+- ドラックで簡単に移動
+- CUIから起動
 
-## Screenshots
+## スクリーンショット
 
 # ![yamada](media/screenshot.gif)
 
 
-## Download
+## ダウンロード
 
 ### MacOS
 
@@ -30,19 +30,17 @@ CLIをサポートしています。
 ターミナルから現在のディレクトリを簡単に開くことができます。
 
 ```
-$ yamada .
-```
-
-### ヘルプ
-
-```
 $ yamada --help
-```
 
-## Development
+  Usage
+    $ yamada [path]
 
-```
-$ npm start
+  Options
+    --interval,-i    interval time
+
+  Examples
+    $ yamada . -i 3000
+    $ yamada ~/Pictures/
 ```
 
 ## Contributing
