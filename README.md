@@ -1,4 +1,5 @@
-# ![yamada](yamada.png)
+# yamada
+<img src="yamada.png" width=400>
 
 > ミニマム作業用画像ビューア
 
