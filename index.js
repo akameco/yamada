@@ -41,7 +41,7 @@ const cli = parseArgs(`
 const {executedFrom, interval} = cli.flags;
 const input = cli.input[0];
 
-const watcher	= new Watcher({interval});
+const watcher = new Watcher({interval});
 
 const getImagePath = () => {
 	if (input) {
