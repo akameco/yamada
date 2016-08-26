@@ -8,12 +8,6 @@ const Conf = require('electron-config');
 const config = new Conf();
 
 class Watcher {
-	constructor(opts) {
-		this.images = [];
-		this.index = 0;
-		this.interval = opts.interval || 1000;
-	}
-
 	reset() {
 		this.index = 0;
 		this.images = [];
@@ -92,4 +86,4 @@ class Watcher {
 	}
 }
 
-module.exports = Watcher;
+module.exports = new Watcher();

@@ -1,10 +1,9 @@
 'use strict';
 const {ipcRenderer, remote} = global.require('electron');
-const Config = require('electron-config');
+const config = require('./config');
 
 const {app, Menu, MenuItem} = remote;
 const win = remote.getCurrentWindow();
-const config = new Config();
 
 let keepAspectRatio = config.get('keepAspectRatio') || false;
 
